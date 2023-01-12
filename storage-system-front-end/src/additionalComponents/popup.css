@@ -1,0 +1,49 @@
+#popup{
+	position: absolute;
+	/* bottom: -5.5vh;
+	left: 3vw; */
+		opacity: 0.0;
+		bottom: 3.5vh;
+		left: 3vw;
+	padding: 1vh;
+	background-color: rgb(37, 37, 37);
+	border-radius: 20px;
+	border: 1px solid rgb(87, 87, 87);
+  animation-name: example;
+  animation-duration: 4s;
+}
+#popuptext{
+	color: white;
+	margin: 1vw;
+}
+/* 
+div {
+	width: 100px;
+  height: 100px;
+  background-color: red;
+  animation-name: example;
+  animation-duration: 4s;
+} */
+
+@keyframes example {
+  0%   {
+		/* left: 3vw;
+		bottom: -5.5vh; */
+		opacity: 0.0;
+	}
+  35% {
+		/* bottom: 3.5vh;
+		left: 3vw; */
+		opacity: 1.0;
+	}
+	65% {
+		/* bottom: 3.5vh;
+		left: 3vw; */
+		opacity: 1.0;
+	}
+	100%{
+		/* bottom: -5.5vh;
+		left: 3vw; */
+		opacity: 0.0;
+	}
+}

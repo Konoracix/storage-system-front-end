@@ -78,6 +78,24 @@ useEffect(()=>{
 					},
 				});
 				sessionStorage.setItem("token", "bearer " + data.data.token)
+
+				const permissions = await axios({
+					method: 'post',
+					url: `http://localhost:5050/api/auth/addPermission`, 
+					withCredentials: false,
+					headers: {
+						'Access-Control-Allow-Origin': '*',
+						'Content-Type': 'application/json',
+						'authorization': `bearer ${data.data.token}`
+					},
+					data: {
+						user_id: user.data.id,
+    				users_permissions: true,
+    				racks_permissions: true,
+    				items_premissions: true
+					},
+				});
+
 				navigate('/Dashboard');	
 			})()
 		}
@@ -135,7 +153,9 @@ useEffect(()=>{
 					<button id="signUpButton" onClick={signUp}>Sign Up</button>
 					<br />
 					<br />
-					<label id="loginMessage">{loginMessage}</label>
+					{
+						loginMessage === '' ? null : <div id='popup' onAnimationEnd={(()=>{setLoginMessage('')})}><label id='popuptext'>{loginMessage}</label> </div>
+					}
 					<br />
 					<label id='makeAccount' onClick={forwardToLoggingIn}>Sign in</label>
 					<br />

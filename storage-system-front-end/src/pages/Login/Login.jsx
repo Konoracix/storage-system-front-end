@@ -3,22 +3,32 @@ import { useEffect, useState } from 'react';
 import './Login.css';
 import axios from 'axios';
 
+import Popup from '../../additionalComponents/popup';
+
 function Login() {
 
 useEffect(()=>{
 	if(sessionStorage.getItem("eventMessage") === 'logout'){
 		setLoginMessage('Successfully logged out')
 		sessionStorage.setItem("eventMessage", '')
+	}if(sessionStorage.getItem("eventMessage") === 'changedPassword'){
+		setLoginMessage('Successfully changed password')
+		sessionStorage.setItem("eventMessage", '')
+	}if(sessionStorage.getItem("eventMessage") === 'changedMail'){
+		setLoginMessage('Successfully changed mail')
+		sessionStorage.setItem("eventMessage", '')
+	}if(sessionStorage.getItem("eventMessage") === 'changedName'){
+		setLoginMessage('Successfully changed name')
+		sessionStorage.setItem("eventMessage", '')
 	}
 }, [])
-
-
 
 	const navigate = useNavigate();
 
 	const [fetchedData, setFetchedData] = useState({});
 
 	const [loginMessage, setLoginMessage] = useState('');
+
 
 	const [formData, setFormData] = useState({email: '', password: ''});
 
@@ -55,10 +65,13 @@ useEffect(()=>{
 		}
 		else if(formData.email === ''){
 			setLoginMessage('Missing email')
+			// changePopupVisibility()
 		}
 		else if(formData.password === ''){
 			setLoginMessage('Missing password')
+			// changePopupVisibility()
 		}
+		// changePopupVisibility()
 	}
 
 	function changePasswordVisibility(){
@@ -72,7 +85,7 @@ useEffect(()=>{
 	function firwardToMakingAccount(){
 		navigate('/Signup')
 	}
-	
+
   return (
 	<div>
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css"></link>
@@ -101,7 +114,9 @@ useEffect(()=>{
 				<label id='makeAccount' onClick={firwardToMakingAccount}>Signup</label>
 					<br />
 					<br />
-					<label id="loginMessage">{loginMessage}</label>
+					{
+						loginMessage === '' ? null : <div id='popup' onAnimationEnd={(()=>{setLoginMessage('')})}><label id='popuptext'>{loginMessage}</label> </div>
+					}
 			</div>
 		</div>
 	</div>
