@@ -12,6 +12,20 @@
 #userData:hover{
 	color: rgb(194, 191, 191);
 }
+#goToManageItems{
+	position: absolute;
+	left: 17vw;
+	bottom: 2vh;
+	background-color: rgb(87, 87, 87);
+	/* margin-left: 50%;
+	transform: translate(-50%); */
+	border-radius:20px;
+	color: white;
+	border:0px solid rgb(15, 15, 15);
+	cursor:pointer;
+	font-size:17px;
+	padding:16px 31px;
+}
 #goToManageUsers{
 	position: absolute;
 	left: 2vw;

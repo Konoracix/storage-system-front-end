@@ -15,6 +15,15 @@ import ChangeUserDataName from './pages/ChangeUserData/Name/ChangeUserDataName'
 import ChangeUserDataSurname from './pages/ChangeUserData/Surname/ChangeUserDataSurname'
 import ManageUsers from './pages/ManageUsers/ManageUsers'
 import AddUser from './pages/ManageUsers/AddUser/AddUser'
+import EditUser from './pages/ManageUsers/EditUser/EditUser'
+
+import ManageItems from './pages/ManageStorage/ManageStorage'
+import AddItem from './pages/ManageStorage/Items/AddItem/AddItem'
+import EditItem from './pages/ManageStorage/Items/EditItem/EditItem'
+
+import ManageRacks from './pages/ManageStorage/Racks/ManageRacks'
+import AddRacks from './pages/ManageStorage/Racks/AddRack/AddItem'
+import EditRacks from './pages/ManageStorage/Racks/EditRack/EditItem'
 
 export default function App(){
 
@@ -36,6 +45,15 @@ export default function App(){
 			<Route path='/ChangeUserDataSurname' element={<ChangeUserDataSurname/>}/>
 			<Route path='/ManageUsers' element={<ManageUsers/>}/>
 			<Route path='/AddUser' element={<AddUser/>}/>
+			<Route path='/EditUser' element={<EditUser/>}/>	
+
+			<Route path='/ManageItems' element={<ManageItems/>}/>
+			<Route path='/AddItem' element={<AddItem/>}/>
+			<Route path='/EditItem' element={<EditItem/>}/>
+
+			<Route path='/ManageRacks' element={<ManageRacks/>}/>
+			<Route path='/AddRack' element={<AddRacks/>}/>
+			<Route path='/EditRacks' element={<EditRacks/>}/>
 			
 		</Routes>
 		</BrowserRouter>

@@ -1,7 +1,7 @@
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import './ManageUsers.css';
+import './ManageStorage.css';
 
 function Dashboard() {
 	
@@ -89,7 +89,10 @@ function Dashboard() {
 	}
 	
 	function goToAddUser(){
-		navigate('/AddUser')
+		navigate('/AddItem')
+	}
+	function goToManageRacks(){
+		navigate('/ManageRacks')
 	}
 	
 	function search(){
@@ -112,7 +115,7 @@ function Dashboard() {
 	}
 
 	function handleEdit(e){
-		navigate(`/EditUser?id=${e.target.getAttribute("name")}`)
+		navigate(`/EditItem?id=${e.target.getAttribute("name")}`)
 	}
 
   return (
@@ -124,7 +127,7 @@ function Dashboard() {
 		<p id='userData' onClick={navigateToChangeMail}>Mail:&nbsp; {mail}</p>
 		<p id='userData' onClick={navigateToChangePassword}>Password:&nbsp; {password}</p>
 		<button id='logoutButton' onClick={logout}>Logout</button> */}
-		<h1>Users in {organizationName}</h1>
+		<h1>Items in {organizationName}</h1>
 		<div className='searchInpit'>
 			<input type="text" onChange={handleChange} name='searchData' id='id_password_2'/>&nbsp;&nbsp;
 			<button id='searchButton' onClick={fetchData}>Search</button>
@@ -160,7 +163,8 @@ function Dashboard() {
 			</select>
 		
 		<button id='logoutButton' onClick={goBackToDashboard}>Dashboard</button>
-		<button id='addUserButton' onClick={goToAddUser}>Add user</button>
+		<button id='addUserButton' onClick={goToAddUser}>Add item</button>
+		<button id='manageRacksButton' onClick={goToManageRacks}>Manage racks</button>
 		{
 			loginMessage === '' ? null : <div id='popup' onAnimationEnd={(()=>{setLoginMessage('')})}><label id='popuptext'>{loginMessage}</label> </div>
 		}

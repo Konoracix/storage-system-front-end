@@ -1,7 +1,7 @@
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import './ManageUsers.css';
+import './ManageRacks.css';
 
 function Dashboard() {
 	
@@ -61,7 +61,7 @@ function Dashboard() {
 
 			const allUsersData = await axios({
 				method: 'get',
-				url: `http://localhost:5050/api/auth/getUserBySearch/${userData.data.organization_id}/${formData.searchData != ''? formData.searchData : 'null'}?current_page=${selectedListOption}`, 
+				url: `http://localhost:5050/api/racks/getRacksBySearch/${userData.data.organization_id}/${formData.searchData != ''? formData.searchData : 'null'}?current_page=${selectedListOption}`, 
 				headers: {'authorization': `bearer ${token}`},
 			})
 			let pomList = [];
@@ -89,7 +89,7 @@ function Dashboard() {
 	}
 	
 	function goToAddUser(){
-		navigate('/AddUser')
+		navigate('/AddRack')
 	}
 	
 	function search(){
@@ -103,16 +103,16 @@ function Dashboard() {
 			const token = sessionStorage.getItem("token").split(' ')[1];
 			const userData = await axios({
 				method: 'delete',
-				url: `http://localhost:5050/api/auth/removeUser/${e.target.getAttribute("name")}`, 
+				url: `http://localhost:5050/api/racks/deleteRack/${e.target.getAttribute("name")}`, 
 				headers: {'authorization': `bearer ${token}`},
 			})
 		})()
-		setLoginMessage('Succesfully deleted user')
+		setLoginMessage('Succesfully deleted rack')
 		fetchData()
 	}
 
 	function handleEdit(e){
-		navigate(`/EditUser?id=${e.target.getAttribute("name")}`)
+		navigate(`/EditItem?id=${e.target.getAttribute("name")}`)
 	}
 
   return (
@@ -124,7 +124,7 @@ function Dashboard() {
 		<p id='userData' onClick={navigateToChangeMail}>Mail:&nbsp; {mail}</p>
 		<p id='userData' onClick={navigateToChangePassword}>Password:&nbsp; {password}</p>
 		<button id='logoutButton' onClick={logout}>Logout</button> */}
-		<h1>Users in {organizationName}</h1>
+		<h1>Racks in {organizationName}</h1>
 		<div className='searchInpit'>
 			<input type="text" onChange={handleChange} name='searchData' id='id_password_2'/>&nbsp;&nbsp;
 			<button id='searchButton' onClick={fetchData}>Search</button>
@@ -133,17 +133,17 @@ function Dashboard() {
 			<table style={tableStyle}>
       	<tbody>
         	<tr>
-          	<th style={tdStyle}>Id</th>
+          	{/* <th style={tdStyle}>Id</th> */}
           	<th style={tdStyle}>Name</th>
-          	<th style={tdStyle}>Surname</th>
-          	<th style={tdStyle}>Mail</th>
+          	<th style={tdStyle}>Shelves</th>
+          	<th style={tdStyle}>Places</th>
         	</tr>
-          	{allUsers.map(({ id, name, surname, mail }) => (
+          	{allUsers.map(({ id, name, shelves, places }) => (
             	<tr key={id}>
-            	  <td style={tdStyle} id="tableText">{id}</td>
+            	  {/* <td style={tdStyle} id="tableText">{id}</td> */}
             	  <td style={tdStyle} id="tableText">{name}</td>
-            	  <td style={tdStyle} id="tableText">{surname}</td>
-            	  <td style={tdStyle} id="tableText">{mail}</td>
+            	  <td style={tdStyle} id="tableText">{shelves}</td>
+            	  <td style={tdStyle} id="tableText">{places}</td>
             	  <td style={tdStyle} id="tableText" onClick={handleEdit} name={id}>edit</td>
             	  <td style={tdStyle} id="tableText" onClick={handleDelete} name={id}>delete</td>
           	  </tr>
@@ -160,7 +160,7 @@ function Dashboard() {
 			</select>
 		
 		<button id='logoutButton' onClick={goBackToDashboard}>Dashboard</button>
-		<button id='addUserButton' onClick={goToAddUser}>Add user</button>
+		<button id='addUserButton' onClick={goToAddUser}>Add rack</button>
 		{
 			loginMessage === '' ? null : <div id='popup' onAnimationEnd={(()=>{setLoginMessage('')})}><label id='popuptext'>{loginMessage}</label> </div>
 		}

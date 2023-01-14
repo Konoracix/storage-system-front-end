@@ -108,6 +108,10 @@ function Dashboard() {
 	function navigateToManageUsers(){
 		navigate('/ManageUsers')
 	}
+	function navigateToMagageItems(){
+		navigate('/ManageItems')
+	}
+
 
   return (
 	<div>
@@ -120,6 +124,9 @@ function Dashboard() {
 		<button id='logoutButton' onClick={logout}>Logout</button>
 		{
 			permissions.users_permissions ? <button id='goToManageUsers' onClick={navigateToManageUsers}>Manage Users</button> : ''
+		}
+		{
+			permissions.items_premissions ? <button id='goToManageItems' onClick={navigateToMagageItems}>Manage Items</button> : ''
 		}
 		{
 			loginMessage === '' ? null : <div id='popup' onAnimationEnd={(()=>{setLoginMessage('')})}><label id='popuptext'>{loginMessage}</label> </div>
