@@ -15,6 +15,13 @@ body{
 	width: 100%;
 	/* width: 80px; */
 }
+
+#select{
+	position: relative;
+	left: 50%;
+	transform: translateX(-50%);
+}
+
 #textForCheckBox{
 	position: relative;
 	bottom: 21px;
@@ -80,6 +87,19 @@ input{
 	font-size:17px;
 	padding:16px 21px;
 	bottom: 1vh;
+}
+#AddItemButton {
+	position: relative;
+	background-color: rgb(87, 87, 87);
+	margin-left: 50%;
+	transform: translate(-50%);
+	border-radius:20px;
+	color: white;
+	border:0px solid rgb(15, 15, 15);
+	cursor:pointer;
+	font-size:17px;
+	padding:16px 21px;
+	top: 3vh;
 }
 #AddUserButton:hover {
 	background-color: rgb(73, 73, 73);

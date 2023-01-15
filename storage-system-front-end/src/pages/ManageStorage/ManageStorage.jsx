@@ -9,6 +9,9 @@ function Dashboard() {
 		if(sessionStorage.getItem("eventMessage") === 'addedUser'){
 			setLoginMessage('Successfully added new user')
 			sessionStorage.setItem("eventMessage", '')
+		}else if(sessionStorage.getItem("eventMessage") === 'addedItem'){
+			setLoginMessage('Successfully added new item')
+			sessionStorage.setItem("eventMessage", '')
 		}
 	}, [])
 
@@ -20,10 +23,12 @@ function Dashboard() {
 
 	const [allUsers, setAllUsers] = useState([]);
 	
+	const [racksData, setRacksData] = useState([]);
+
 	const [fetchedData, setFetchedData] = useState({});
 	const [selectList, setSelectList] = useState([]);
 	const [selectedListOption, setSelectedListOption] = useState(1);
-	const [formData, setFormData] = useState('');
+	const [formData, setFormData] = useState({searchData: ''});
 
 	function handleChange(e) {
 		setFormData((prev) => ({...prev, [e.target.name]: e.target.value}));
@@ -46,11 +51,19 @@ function Dashboard() {
 				url: `http://localhost:5050/api/auth/tokenData/${token}`, 
 				headers: {'authorization': `bearer ${token}`}, 
 			})
+
 			const userData = await axios({
 				method: 'get',
 				url: `http://localhost:5050/api/auth/getUserById/${tokenData.data.user_id}`, 
 				headers: {'authorization': `bearer ${token}`},
 			})
+
+			const racks = await axios({
+				method: 'get',
+				url: `http://localhost:5050/api/racks/getRacks/${userData.data.organization_id}`, 
+				headers: {'authorization': `bearer ${token}`},
+			})
+			setRacksData(racks.data)
 			const organizationData = await axios({
 				method: 'get',
 				url: `http://localhost:5050/api/auth/getOrganizationById/${userData.data.organization_id}`, 
@@ -59,19 +72,20 @@ function Dashboard() {
 
 			setOrganizationName(organizationData.data.organization_name)
 
-			const allUsersData = await axios({
+			const allItemsData = await axios({
 				method: 'get',
-				url: `http://localhost:5050/api/auth/getUserBySearch/${userData.data.organization_id}/${formData.searchData != ''? formData.searchData : 'null'}?current_page=${selectedListOption}`, 
+				url: `http://localhost:5050/api/items/getAllItemsBySearch/${parseInt(userData.data.organization_id)}/${formData.searchData != ''? formData.searchData : 'null'}?current_page=${selectedListOption}`, 
 				headers: {'authorization': `bearer ${token}`},
 			})
+			// const allItemsData =""
 			let pomList = [];
-			for(let i = 0; i<allUsersData.data.total_pages; i++){
+			for(let i = 0; i<allItemsData.data.total_pages; i++){
 				pomList.push(i+1)
 			}
 			setSelectList(pomList);
-			setFetchedData(allUsersData.data);
+			setFetchedData(allItemsData.data);
 			setOrganization(organizationData.data.organization_name)
-			setAllUsers(allUsersData.data.data)
+			setAllUsers(allItemsData.data.data)
 	})()
 	}
 
@@ -106,12 +120,20 @@ function Dashboard() {
 			const token = sessionStorage.getItem("token").split(' ')[1];
 			const userData = await axios({
 				method: 'delete',
-				url: `http://localhost:5050/api/auth/removeUser/${e.target.getAttribute("name")}`, 
+				url: `http://localhost:5050/api/items/deleteItem/${e.target.getAttribute("name")}`, 
 				headers: {'authorization': `bearer ${token}`},
 			})
 		})()
 		setLoginMessage('Succesfully deleted user')
 		fetchData()
+	}
+
+	function getRackFromId(id){
+		for(let i = 0; i<racksData.length; i++){
+			if(racksData[i].id == id){
+				return racksData[i].name
+			}
+		}
 	}
 
 	function handleEdit(e){
@@ -120,13 +142,6 @@ function Dashboard() {
 
   return (
 	<div>
-		{/* <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" /> */}
-		{/* <p id='userData'>Organization:&nbsp; {organization}</p>
-		<p id='userData' onClick={navigateToChangeName}>Name:&nbsp; {name}</p>
-		<p id='userData' onClick={navigateToChangeSurname}>Surname:&nbsp; {surname}</p>
-		<p id='userData' onClick={navigateToChangeMail}>Mail:&nbsp; {mail}</p>
-		<p id='userData' onClick={navigateToChangePassword}>Password:&nbsp; {password}</p>
-		<button id='logoutButton' onClick={logout}>Logout</button> */}
 		<h1>Items in {organizationName}</h1>
 		<div className='searchInpit'>
 			<input type="text" onChange={handleChange} name='searchData' id='id_password_2'/>&nbsp;&nbsp;
@@ -138,15 +153,19 @@ function Dashboard() {
         	<tr>
           	<th style={tdStyle}>Id</th>
           	<th style={tdStyle}>Name</th>
-          	<th style={tdStyle}>Surname</th>
-          	<th style={tdStyle}>Mail</th>
+          	<th style={tdStyle}>Rack</th>
+          	<th style={tdStyle}>Shelve number</th>
+          	<th style={tdStyle}>Place number</th>
+          	<th style={tdStyle}>Description</th>
         	</tr>
-          	{allUsers.map(({ id, name, surname, mail }) => (
+          	{allUsers.map(({ id, rack_id ,name, shelve_number, place_number, description}) => (
             	<tr key={id}>
             	  <td style={tdStyle} id="tableText">{id}</td>
             	  <td style={tdStyle} id="tableText">{name}</td>
-            	  <td style={tdStyle} id="tableText">{surname}</td>
-            	  <td style={tdStyle} id="tableText">{mail}</td>
+            	  <td style={tdStyle} id="tableText">{getRackFromId(rack_id)}</td>
+            	  <td style={tdStyle} id="tableText">{shelve_number}</td>
+            	  <td style={tdStyle} id="tableText">{place_number}</td>
+            	  <td style={tdStyle} id="tableText">{description}</td>
             	  <td style={tdStyle} id="tableText" onClick={handleEdit} name={id}>edit</td>
             	  <td style={tdStyle} id="tableText" onClick={handleDelete} name={id}>delete</td>
           	  </tr>

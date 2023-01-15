@@ -14,7 +14,7 @@ const [user_id, setUser_id] = useState('');
 
 const [loginMessage, setLoginMessage] = useState('');
 
-const [formData, setFormData] = useState({password: '', mail: ''});
+const [formData, setFormData] = useState({name: '', shelves: '', places: ''});
 
 function handleChange(e) {
 	setFormData((prev) => ({...prev, [e.target.name]: e.target.value}));
@@ -38,7 +38,6 @@ useEffect((()=>{fetchData()}), [])
 				url: `http://localhost:5050/api/auth/getUserById/${tokenData.data.user_id}`, 
 				headers: {'authorization': `bearer ${token}`},
 			})
-			console.log(userData.data)
 			const organizationData = await axios({
 				method: 'get',
 				url: `http://localhost:5050/api/auth/getOrganizationById/${userData.data.organization_id}`, 
@@ -50,40 +49,41 @@ useEffect((()=>{fetchData()}), [])
 
 	function addUser(e){
 		e.preventDefault();
-		if(formData.mail !== '' && formData.password !== ''){
+		if(formData.name !== '' && formData.shelves !== '' && formData.places !== ''){
 			(async ()=>{
 				const token = sessionStorage.getItem("token").split(' ')[1];
 				const addedUser = await axios({
 					method: 'post',
-					url: `http://localhost:5050/api/auth/addUser`, 
+					url: `http://localhost:5050/api/racks/addRack`, 
 					headers: {'authorization': `bearer ${token}`}, 
 					data: {
 							organization_id: organization.id,
-							name: formData.name ? formData.name : '',
-							surname: formData.surname ? formData.surname : '',
-							mail: formData.mail,
-							password: formData.password
+							name: formData.name,
+							shelves: parseInt(formData.shelves),
+							places: parseInt(formData.places),
 					}
 				})
-				const addedPermission = await axios({
-					method: 'post',
-					url: `http://localhost:5050/api/auth/addPermission`, 
-					headers: {'authorization': `bearer ${token}`}, 
-					data: {
-						user_id: addedUser.data.id,
-						users_permissions: formData.usersPermissions,
-						racks_permissions: formData.racksPermissions,
-						items_premissions: formData.itemsPermissions
-					}
-				})
-				sessionStorage.setItem("eventMessage", 'addedUser');
-				navigate('/ManageUsers');	
+				// const addedPermission = await axios({
+				// 	method: 'post',
+				// 	url: `http://localhost:5050/api/auth/addPermission`, 
+				// 	headers: {'authorization': `bearer ${token}`}, 
+				// 	data: {
+				// 		user_id: addedUser.data.id,
+				// 		users_permissions: formData.usersPermissions,
+				// 		racks_permissions: formData.racksPermissions,
+				// 		items_premissions: formData.itemsPermissions
+				// 	}
+				// })
+				sessionStorage.setItem("eventMessage", 'addedRack');
+				navigate('/ManageRacks');	
 			})()
 		}
-		else if(formData.mail === ''){
-			setLoginMessage('Missing mail')
-		}else if(formData.password === ''){
-			setLoginMessage('Missing password')
+		else if(formData.name === ''){
+			setLoginMessage('Missing name')
+		}else if(formData.shelves === ''){
+			setLoginMessage('Missing number of shelves')
+		}else if(formData.places === ''){
+			setLoginMessage('Missing number of places')
 		}
 	}
 	
@@ -104,7 +104,7 @@ useEffect((()=>{fetchData()}), [])
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css"></link>
 		<h1>Add new rack to {organization.organization_name}</h1>
 		<div id='container'>
-			<div id='loginSectionAddUser'>
+			<div id='loginSectionAddUser2'>
 				<form>
 					<br />
 					
@@ -113,17 +113,18 @@ useEffect((()=>{fetchData()}), [])
 					<input type="text" onChange={handleChange} name="name" id="id_password_2"/>
 					<br />
 					<br />
- 					<label>Surname</label>
+ 					<label>Number of shelves</label>
 					<br />
-					<input type="text" onChange={handleChange} name="surname" id="id_password_2"/>
-					<br />
-					<br />
- 					<label>Mail</label>
-					<br />
-					<input type="text" onChange={handleChange} name="mail" id="id_password_2"/>
+					<input type="text" onChange={handleChange} name="shelves" id="id_password_2"/>
 					<br />
 					<br />
- 					<label>Password</label>
+ 					<label>Number of places</label>
+					<br />
+					<input type="text" onChange={handleChange} name="places" id="id_password_2"/>
+					<br />
+					<br />
+					<br />
+ 					{/* <label>Password</label>
 					<br />
 					<input type="password" onChange={handleChange} name="password" id="passwordInput"/>
  					<i className="far fa-eye" onClick={changePasswordVisibility} id="togglePassword"></i>
@@ -133,7 +134,7 @@ useEffect((()=>{fetchData()}), [])
 					<input type="checkbox" id='permissionCheckBox' onChange={handleCheck} name='racksPermissions'/><label id='textForCheckBox'>Racks Permissions</label> 
 					<input type="checkbox" id='permissionCheckBox' onChange={handleCheck} name='itemsPermissions'/><label id='textForCheckBox'>Items Permissions</label> 
 					<br />					
-					<br />					
+					<br />					 */}
 					<button id="AddUserButton" onClick={addUser}>Add Rack</button>
 				</form>
 				<button id='logoutButton' onClick={navigateToManageUsers}>Manage Racks</button>

@@ -9,6 +9,9 @@ function Dashboard() {
 		if(sessionStorage.getItem("eventMessage") === 'addedUser'){
 			setLoginMessage('Successfully added new user')
 			sessionStorage.setItem("eventMessage", '')
+		}if(sessionStorage.getItem("eventMessage") === 'addedRack'){
+			setLoginMessage('Successfully added new rack')
+			sessionStorage.setItem("eventMessage", '')
 		}
 	}, [])
 
@@ -85,7 +88,7 @@ function Dashboard() {
 	};
 	
 	function goBackToDashboard(){
-		navigate('/Dashboard')
+		navigate('/ManageItems')
 	}
 	
 	function goToAddUser(){
@@ -112,7 +115,7 @@ function Dashboard() {
 	}
 
 	function handleEdit(e){
-		navigate(`/EditItem?id=${e.target.getAttribute("name")}`)
+		navigate(`/EditRack?id=${e.target.getAttribute("name")}`)
 	}
 
   return (
@@ -159,7 +162,7 @@ function Dashboard() {
 					})}
 			</select>
 		
-		<button id='logoutButton' onClick={goBackToDashboard}>Dashboard</button>
+		<button id='logoutButton' onClick={goBackToDashboard}>Manage items</button>
 		<button id='addUserButton' onClick={goToAddUser}>Add rack</button>
 		{
 			loginMessage === '' ? null : <div id='popup' onAnimationEnd={(()=>{setLoginMessage('')})}><label id='popuptext'>{loginMessage}</label> </div>

@@ -23,22 +23,22 @@ function handleChange(e) {
 }
 
 useEffect((()=>{fetchData()}), [])
-useEffect((()=>{console.log(formData)}), [formData])
+// useEffect((()=>{console.log(formData)}), [formData])
 
 	function fetchData(){
 	
 		const tokenData = (async()=>{
 			const token = sessionStorage.getItem("token").split(' ')[1];
 			const name = new URLSearchParams(document.location.search).get('id')
-			setUser_id(name)
-			// const tokenData = await axios({
-			// 	method: 'get',
-			// 	url: `http://localhost:5050/api/auth/tokenData/${token}`, 
-			// 	headers: {'authorization': `bearer ${token}`}, 
-			// })
+			setUser_id(name)	
+			const tokenData = await axios({
+				method: 'get',
+				url: `http://localhost:5050/api/auth/tokenData/${token}`, 
+				headers: {'authorization': `bearer ${token}`}, 
+			})
 			const userData = await axios({
 				method: 'get',
-				url: `http://localhost:5050/api/auth/getUserById/${name}`, 
+				url: `http://localhost:5050/api/auth/getUserById/${tokenData.data.user_id}`, 
 				headers: {'authorization': `bearer ${token}`},
 			})
 			const organizationData = await axios({
@@ -46,19 +46,17 @@ useEffect((()=>{console.log(formData)}), [formData])
 				url: `http://localhost:5050/api/auth/getOrganizationById/${userData.data.organization_id}`, 
 				headers: {'authorization': `bearer ${token}`},
 			})
-			const userPermissions = await axios({
+			const rackData = await axios({
 				method: 'get',
-				url: `http://localhost:5050/api/auth/getPermissionById/${name}`, 
-				headers: {'authorization': `bearer ${token}`}
+				url: `http://localhost:5050/api/racks/getRack/${name}`, 
+				headers: {'authorization': `bearer ${token}`},
 			})
+
 			// setFormData((prev) => ({...prev, [e.target.name]: e.target.value}));
 			setFormData({
-				mail: userData.data.mail,
-				name: userData.data.name,
-				surname: userData.data.surname,
-				usersPermissions: userPermissions.data.users_permissions,
-				racksPermissions: userPermissions.data.racks_permissions,
-				itemsPermissions: userPermissions.data.items_premissions
+				name: rackData.data.name,
+				shelves: rackData.data.shelves,
+				places: rackData.data.places,
 			});
 			// setMail(userData.data.mail)
 			// setName(userData.data.name)
@@ -70,42 +68,25 @@ useEffect((()=>{console.log(formData)}), [formData])
 
 	function addUser(e){
 		e.preventDefault();
-		if(formData.mail !== '' && formData.password !== ''){
 			(async ()=>{
 				const token = sessionStorage.getItem("token").split(' ')[1];
 				const editedUser = await axios({
 					method: 'put',
-					url: `http://localhost:5050/api/auth/editUser/${user_id}`, 
+					url: `http://localhost:5050/api/racks/editRack/${user_id}`, 
 					headers: {'authorization': `bearer ${token}`}, 
 					data: {
 							name: formData.name,
-							surname: formData.surname,
-							mail: formData.mail,
+							shelves: formData.shelves,
+							places: formData.places,
 					}
 				})
-				const editPermissions = await axios({
-					method: 'put',
-					url: `http://localhost:5050/api/auth/editPermission/${user_id}`, 
-					headers: {'authorization': `bearer ${token}`}, 
-					data: {
-						users_permissions: formData.usersPermissions,
-						racks_permissions: formData.racksPermissions,
-						items_premissions: formData.itemsPermissions
-					}
-				})
-				sessionStorage.setItem("eventMessage", 'addedUser');
-				navigate('/ManageUsers');	
+				sessionStorage.setItem("eventMessage", 'editedRack');
+				navigate('/ManageRacks');	
 			})()
-		}
-		else if(formData.mail === ''){
-			setLoginMessage('Missing mail')
-		}else if(formData.password === ''){
-			setLoginMessage('Missing password')
-		}
 	}
 	
 	function navigateToManageUsers(){
-		navigate('/ManageUsers')
+		navigate('/ManageRacks')
 	}
 
 	function changePasswordVisibility(){
@@ -119,7 +100,7 @@ useEffect((()=>{console.log(formData)}), [formData])
   return (
 	<div>
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css"></link>
-		<h1>Edit user in {organization.organization_name}</h1>
+		<h1>Edit rack in {organization.organization_name}</h1>
 		<div id='container'>
 			<div id='loginSectionAddUser'>
 				<form>
@@ -130,21 +111,18 @@ useEffect((()=>{console.log(formData)}), [formData])
 					<input type="text" onChange={handleChange} value={formData.name} name="name" id="id_password_2"/>
 					<br />
 					<br />
- 					<label>Surname</label>
+ 					<label>Number of shelves</label>
 					<br />
-					<input type="text" onChange={handleChange} value={formData.surname} name="surname" id="id_password_2"/>
-					<br />
-					<br />
- 					<label>Mail</label>
-					<br />
-					<input type="text" onChange={handleChange} name="mail" value={formData.mail} id="id_password_2"/>
+					<input type="text" onChange={handleChange} value={formData.shelves} name="shelves" id="id_password_2"/>
 					<br />
 					<br />
-					<input defaultChecked={formData.usersPermissions} type="checkbox" id='permissionCheckBox' onChange={handleChange} name='usersPermissions'/>&nbsp;&nbsp;<label id='textForCheckBox'>Users Permissions</label> 
-					<input defaultChecked={formData.racksPermissions} type="checkbox" id='permissionCheckBox' onChange={handleChange} name='racksPermissions'/>&nbsp;&nbsp;<label id='textForCheckBox'>Racks Permissions</label> 
-					<input defaultChecked={formData.itemsPermissions} type="checkbox" id='permissionCheckBox' onChange={handleChange} name='itemsPermissions'/>&nbsp;&nbsp;<label id='textForCheckBox'>Items Permissions</label> 
-					<br />					
-					<br />					
+ 					<label>Number of places</label>
+					<br />
+					<input type="text" onChange={handleChange} name="places" value={formData.places} id="id_password_2"/>
+					<br />
+					<br />
+					<br />
+										
 					<button id="AddUserButton" onClick={addUser}>Edit User</button>
 				</form>
 				<button id='logoutButton' onClick={navigateToManageUsers}>Manage Users</button>

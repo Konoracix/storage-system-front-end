@@ -53,7 +53,7 @@ export default function App(){
 
 			<Route path='/ManageRacks' element={<ManageRacks/>}/>
 			<Route path='/AddRack' element={<AddRacks/>}/>
-			<Route path='/EditRacks' element={<EditRacks/>}/>
+			<Route path='/EditRack' element={<EditRacks/>}/>
 			
 		</Routes>
 		</BrowserRouter>

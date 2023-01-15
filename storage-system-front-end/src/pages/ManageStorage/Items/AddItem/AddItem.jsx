@@ -14,7 +14,11 @@ const [user_id, setUser_id] = useState('');
 
 const [loginMessage, setLoginMessage] = useState('');
 
-const [formData, setFormData] = useState({password: '', mail: ''});
+const [formData, setFormData] = useState({name: '', shelve: '', place: '', description: '', rack_name: 'Choose rack'});
+
+const [selectList, setSelectList] = useState([]);
+
+const [rackData, setRackData] = useState([]);
 
 function handleChange(e) {
 	setFormData((prev) => ({...prev, [e.target.name]: e.target.value}));
@@ -23,6 +27,9 @@ function handleChange(e) {
 function handleCheck(e) {
 	setFormData((prev) => ({...prev, [e.target.name]: e.target.checked}));
 }
+
+useEffect( (()=> (console.log(formData))), [formData])
+
 useEffect((()=>{fetchData()}), [])
 
 	function fetchData(){
@@ -38,57 +45,70 @@ useEffect((()=>{fetchData()}), [])
 				url: `http://localhost:5050/api/auth/getUserById/${tokenData.data.user_id}`, 
 				headers: {'authorization': `bearer ${token}`},
 			})
-			console.log(userData.data)
 			const organizationData = await axios({
 				method: 'get',
 				url: `http://localhost:5050/api/auth/getOrganizationById/${userData.data.organization_id}`, 
 				headers: {'authorization': `bearer ${token}`},
 			})
 			setOrganization(organizationData.data);
+			const racksData = await axios({
+				method: 'get',
+				url: `http://localhost:5050/api/racks/getRacksBySearchNoPagi/${userData.data.organization_id}/${undefined}`, 
+				headers: {'authorization': `bearer ${token}`},
+			})
+			// console.log(racksData.data)
+			setRackData(racksData.data)
 	})()
 }
 
 	function addUser(e){
 		e.preventDefault();
-		if(formData.mail !== '' && formData.password !== ''){
+		if(formData.name !== '' && formData.shelve !== '' && formData.place !== '' && formData.rack_name !== 'Choose rack'){
 			(async ()=>{
 				const token = sessionStorage.getItem("token").split(' ')[1];
-				const addedUser = await axios({
+
+				const rackData = await axios({
+					method: 'get',
+					url: `http://localhost:5050/api/racks/getRacksBySearch/${organization.id}/${formData.rack_name}`, 
+					headers: {'authorization': `bearer ${token}`},
+				})
+				const rackId = rackData.data.data[0].id
+				console.log(formData.description)
+				const addedItem = await axios({
 					method: 'post',
-					url: `http://localhost:5050/api/auth/addUser`, 
+					url: `http://localhost:5050/api/items/addItem`, 
 					headers: {'authorization': `bearer ${token}`}, 
 					data: {
 							organization_id: organization.id,
-							name: formData.name ? formData.name : '',
-							surname: formData.surname ? formData.surname : '',
-							mail: formData.mail,
-							password: formData.password
+							name: formData.name,
+							description: formData.description,
+							shelve_number: formData.shelve,
+							place_number: formData.place,
+							rack_id: rackId
 					}
 				})
-				const addedPermission = await axios({
-					method: 'post',
-					url: `http://localhost:5050/api/auth/addPermission`, 
-					headers: {'authorization': `bearer ${token}`}, 
-					data: {
-						user_id: addedUser.data.id,
-						users_permissions: formData.usersPermissions,
-						racks_permissions: formData.racksPermissions,
-						items_premissions: formData.itemsPermissions
-					}
-				})
-				sessionStorage.setItem("eventMessage", 'addedUser');
-				navigate('/ManageUsers');	
+
+				sessionStorage.setItem("eventMessage", 'addedItem');
+				navigate('/ManageItems');	
 			})()
 		}
-		else if(formData.mail === ''){
-			setLoginMessage('Missing mail')
-		}else if(formData.password === ''){
-			setLoginMessage('Missing password')
+		else if(formData.name === ''){
+			setLoginMessage('Missing name')
+		}else if(formData.shelve === ''){
+			setLoginMessage('Missing shelve number')
+		}else if(formData.place === ''){
+			setLoginMessage('Missing place number')
+		}else if(formData.rack_name === 'Choose rack'){
+			setLoginMessage('Missing rack')
 		}
 	}
 	
 	function navigateToManageUsers(){
-		navigate('/ManageUsers')
+		navigate('/ManageItems')
+	}
+
+	function onOptionChangeHandler(){
+
 	}
 
 	function changePasswordVisibility(){
@@ -102,7 +122,7 @@ useEffect((()=>{fetchData()}), [])
   return (
 	<div>
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css"></link>
-		<h1>Add new user to {organization.organization_name}</h1>
+		<h1>Add new item to {organization.organization_name}</h1>
 		<div id='container'>
 			<div id='loginSectionAddUser'>
 				<form>
@@ -113,30 +133,35 @@ useEffect((()=>{fetchData()}), [])
 					<input type="text" onChange={handleChange} name="name" id="id_password_2"/>
 					<br />
 					<br />
- 					<label>Surname</label>
+ 					<label>Shelve number</label>
 					<br />
-					<input type="text" onChange={handleChange} name="surname" id="id_password_2"/>
-					<br />
-					<br />
- 					<label>Mail</label>
-					<br />
-					<input type="text" onChange={handleChange} name="mail" id="id_password_2"/>
+					<input type="text" onChange={handleChange} name="shelve" id="id_password_2"/>
 					<br />
 					<br />
- 					<label>Password</label>
+ 					<label>Place number</label>
 					<br />
-					<input type="password" onChange={handleChange} name="password" id="passwordInput"/>
- 					<i className="far fa-eye" onClick={changePasswordVisibility} id="togglePassword"></i>
+					<input type="text" onChange={handleChange} name="place" id="id_password_2"/>
 					<br />
 					<br />
-					<input type="checkbox" id='permissionCheckBox' onChange={handleCheck} name='usersPermissions'/><label id='textForCheckBox'>Users Permissions</label> 
-					<input type="checkbox" id='permissionCheckBox' onChange={handleCheck} name='racksPermissions'/><label id='textForCheckBox'>Racks Permissions</label> 
-					<input type="checkbox" id='permissionCheckBox' onChange={handleCheck} name='itemsPermissions'/><label id='textForCheckBox'>Items Permissions</label> 
-					<br />					
-					<br />					
-					<button id="AddUserButton" onClick={addUser}>Add User</button>
+ 					<label>Description</label>
+					<br />
+					<input type="text" onChange={handleChange} name="description" id="passwordInput"/>
+					<br />
+					<br />
+ 					<label>Rack</label>
+					<br />
+					<br />
+					<select name="rack_name" id="select" onChange={handleChange}>
+						<option>Choose rack</option>
+					{rackData.map((option) => {
+						return <option key={option.id} >
+							{option.name}
+						</option>
+					})}
+			</select>			
+					<button id="AddItemButton" onClick={addUser}>Add User</button>
 				</form>
-				<button id='logoutButton' onClick={navigateToManageUsers}>Manage Users</button>
+				<button id='logoutButton' onClick={navigateToManageUsers}>Manage Items</button>
 				{
 						loginMessage === '' ? null : <div id='popup' onAnimationEnd={(()=>{setLoginMessage('')})}><label id='popuptext'>{loginMessage}</label> </div>
 					}
