@@ -46,11 +46,13 @@ function Dashboard() {
 				url: `http://localhost:5050/api/auth/tokenData/${token}`, 
 				headers: {'authorization': `bearer ${token}`}, 
 			})
+			console.log(tokenData.data.user_id)
 			const userData = await axios({
 				method: 'get',
 				url: `http://localhost:5050/api/auth/getUserById/${tokenData.data.user_id}`, 
 				headers: {'authorization': `bearer ${token}`},
 			})
+			// console.log(userData.data)
 			const organizationData = await axios({
 				method: 'get',
 				url: `http://localhost:5050/api/auth/getOrganizationById/${userData.data.organization_id}`, 
@@ -101,6 +103,7 @@ function Dashboard() {
 	function handleDelete(e){
 		(async () => {
 			const token = sessionStorage.getItem("token").split(' ')[1];
+			// console.log(e.target.getAttribute("name"))
 			const userData = await axios({
 				method: 'delete',
 				url: `http://localhost:5050/api/auth/removeUser/${e.target.getAttribute("name")}`, 

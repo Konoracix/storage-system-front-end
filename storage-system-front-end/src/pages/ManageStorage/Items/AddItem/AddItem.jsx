@@ -159,7 +159,7 @@ useEffect((()=>{fetchData()}), [])
 						</option>
 					})}
 			</select>			
-					<button id="AddItemButton" onClick={addUser}>Add User</button>
+					<button id="AddItemButton" onClick={addUser}>Add Item</button>
 				</form>
 				<button id='logoutButton' onClick={navigateToManageUsers}>Manage Items</button>
 				{

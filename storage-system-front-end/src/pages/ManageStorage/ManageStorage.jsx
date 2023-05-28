@@ -12,6 +12,9 @@ function Dashboard() {
 		}else if(sessionStorage.getItem("eventMessage") === 'addedItem'){
 			setLoginMessage('Successfully added new item')
 			sessionStorage.setItem("eventMessage", '')
+		}else if(sessionStorage.getItem("eventMessage") === 'editedItem'){
+			setLoginMessage('Successfully edited item')
+			sessionStorage.setItem("eventMessage", '')
 		}
 	}, [])
 
@@ -77,7 +80,6 @@ function Dashboard() {
 				url: `http://localhost:5050/api/items/getAllItemsBySearch/${parseInt(userData.data.organization_id)}/${formData.searchData != ''? formData.searchData : 'null'}?current_page=${selectedListOption}`, 
 				headers: {'authorization': `bearer ${token}`},
 			})
-			// const allItemsData =""
 			let pomList = [];
 			for(let i = 0; i<allItemsData.data.total_pages; i++){
 				pomList.push(i+1)
@@ -98,7 +100,7 @@ function Dashboard() {
   	border: '1px solid white',
 	};
 	
-	function goBackToDashboard(){
+	function goToDashboard(){
 		navigate('/Dashboard')
 	}
 	
@@ -109,12 +111,6 @@ function Dashboard() {
 		navigate('/ManageRacks')
 	}
 	
-	function search(){
-		(async () => {
-			
-		})()
-	}
-
 	function handleDelete(e){
 		(async () => {
 			const token = sessionStorage.getItem("token").split(' ')[1];
@@ -181,7 +177,7 @@ function Dashboard() {
 					})}
 			</select>
 		
-		<button id='logoutButton' onClick={goBackToDashboard}>Dashboard</button>
+		<button id='logoutButton' onClick={goToDashboard}>Dashboard</button>
 		<button id='addUserButton' onClick={goToAddUser}>Add item</button>
 		<button id='manageRacksButton' onClick={goToManageRacks}>Manage racks</button>
 		{
